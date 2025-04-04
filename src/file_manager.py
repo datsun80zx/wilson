@@ -65,6 +65,15 @@ def scan_input_files(paths):
             person = parts[0]  # First part is person
             month = parts[-1]  # Last part is month
             
+            # Extract report type (e.g., "hvac" or "all")
+            # Check for specific identifiers in the filename
+            report_type = "all"  # Default report type
+            for part in parts:
+                if part.lower() == "hvac":
+                    report_type = "hvac"
+                    break
+                # Add other report types as needed
+            
             # The data type is everything in between, joined back with underscores
             data_type = '_'.join(parts[1:-1]) if len(parts) > 2 else "unknown"
             
@@ -73,40 +82,55 @@ def scan_input_files(paths):
                 paths["people"][person] = {"months": {}}
             
             if month not in paths["people"][person]["months"]:
+                paths["people"][person]["months"][month] = {"report_types": {}}
+            
+            if report_type not in paths["people"][person]["months"][month]["report_types"]:
                 # Create person-specific subdirectories in converted_inputs and outputs
-                person_month_converted_dir = os.path.join(paths["converted_input_dir"], person, f"month_{month}")
-                person_month_output_dir = os.path.join(paths["output_dir"], person, f"month_{month}")
+                person_month_report_converted_dir = os.path.join(
+                    paths["converted_input_dir"], 
+                    person, 
+                    f"month_{month}", 
+                    report_type
+                )
+                
+                person_month_report_output_dir = os.path.join(
+                    paths["output_dir"], 
+                    person, 
+                    f"month_{month}", 
+                    report_type
+                )
                 
                 # Create directories
-                os.makedirs(person_month_converted_dir, exist_ok=True)
-                os.makedirs(person_month_output_dir, exist_ok=True)
+                os.makedirs(person_month_report_converted_dir, exist_ok=True)
+                os.makedirs(person_month_report_output_dir, exist_ok=True)
                 
-                paths["people"][person]["months"][month] = {
+                paths["people"][person]["months"][month]["report_types"][report_type] = {
                     "raw_files": {},
-                    "converted_dir": person_month_converted_dir,
+                    "converted_dir": person_month_report_converted_dir,
                     "converted_files": {},
-                    "output_dir": person_month_output_dir,
+                    "output_dir": person_month_report_output_dir,
                     "output_files": {}
                 }
             
             # Store the raw input file path
-            paths["people"][person]["months"][month]["raw_files"][data_type] = excel_path
+            report_data = paths["people"][person]["months"][month]["report_types"][report_type]
+            report_data["raw_files"][data_type] = excel_path
             
             # Add reference to the master job report if available for this month
             if month in master_job_reports:
-                paths["people"][person]["months"][month]["raw_files"]["jobs_report"] = master_job_reports[month]
+                report_data["raw_files"]["jobs_report"] = master_job_reports[month]
             
             # Define output file paths
-            output_files = paths["people"][person]["months"][month]["output_files"]
-            output_dir = paths["people"][person]["months"][month]["output_dir"]
+            output_files = report_data["output_files"]
+            output_dir = report_data["output_dir"]
             
             # Define standard output files
-            output_files["consolidated"] = os.path.join(output_dir, f"consolidated_activity_logs.csv")
-            output_files["detailed"] = os.path.join(output_dir, f"detailed_activity_logs.csv")
-            output_files["sales_report"] = os.path.join(output_dir, f"sales_conversion_report.csv")
-            output_files["converted"] = os.path.join(output_dir, f"converted_customers.csv")
-            output_files["non_converted"] = os.path.join(output_dir, f"non_converted_customers.csv")
-            output_files["missing_jobs"] = os.path.join(output_dir, f"missing_sales_jobs.csv")
+            output_files["consolidated"] = os.path.join(output_dir, f"{report_type}_consolidated_activity_logs.csv")
+            output_files["detailed"] = os.path.join(output_dir, f"{report_type}_detailed_activity_logs.csv")
+            output_files["sales_report"] = os.path.join(output_dir, f"{report_type}_sales_conversion_report.csv")
+            output_files["converted"] = os.path.join(output_dir, f"{report_type}_converted_customers.csv")
+            output_files["non_converted"] = os.path.join(output_dir, f"{report_type}_non_converted_customers.csv")
+            output_files["missing_jobs"] = os.path.join(output_dir, f"{report_type}_missing_sales_jobs.csv")
     
     return paths
 

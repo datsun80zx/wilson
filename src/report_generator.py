@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-def generate_sales_conversion_report(consolidated_data, sales_file, output_dir=None, person=None, month=None):
+def generate_sales_conversion_report(consolidated_data, sales_file, output_dir=None, person=None, month=None, report_type=None):
     """
     Generate a report analyzing the conversion rate of customers.
     Consider all customers in the sales file as converted.
@@ -138,12 +138,16 @@ def generate_sales_conversion_report(consolidated_data, sales_file, output_dir=N
     # Create report prefix for filenames
     report_prefix = ""
     if person and month:
-        report_prefix = f"{person}_month_{month}_"
+        if report_type:
+            report_prefix = f"{person}_month_{month}_{report_type}_"
+        else:
+            report_prefix = f"{person}_month_{month}_"
     
     # Print report
     print("\n===== SALES CONVERSION REPORT =====")
     if person and month:
-        print(f"Report for: {person} - Month {month}")
+        report_type_str = f" - Report Type: {report_type}" if report_type else ""
+        print(f"Report for: {person} - Month {month}{report_type_str}")
     print(f"Total unique customers in activity logs: {total_customers}")
     print(f"Customers who made a purchase and appear in activity logs: {converted_customers}")
     print(f"Total customers who made a purchase (all sales): {all_sold_customers}")
@@ -193,12 +197,13 @@ def generate_sales_conversion_report(consolidated_data, sales_file, output_dir=N
         report_df = pd.DataFrame([{
             "Person": person if person else "Unknown",
             "Month": month if month else "Unknown",
-            "Total Customers": total_customers,
-            "Customers in Both Files": converted_customers,
-            "All Sales Customers": all_sold_customers,
-            "Conversion Rate (%)": round(conversion_rate, 2),
-            "Non-Converted Customers": total_customers - converted_customers,
-            "Sales Only Customers": len(sales_only_customers)
+            "Report_Type": report_type if report_type else "all",
+            "Total_Customers": total_customers,
+            "Customers_in_Both_Files": converted_customers,
+            "All_Sales_Customers": all_sold_customers,
+            "Conversion_Rate": round(conversion_rate, 2),
+            "Non_Converted_Customers": total_customers - converted_customers,
+            "Sales_Only_Customers": len(sales_only_customers)
         }])
         
         report_path = os.path.join(output_dir, f"{report_prefix}sales_conversion_report.csv")
@@ -208,6 +213,7 @@ def generate_sales_conversion_report(consolidated_data, sales_file, output_dir=N
     return {
         "person": person,
         "month": month,
+        "report_type": report_type if report_type else "all",
         "total_customers": total_customers,
         "converted_customers": converted_customers,
         "all_sales_customers": all_sold_customers,
@@ -218,7 +224,7 @@ def generate_sales_conversion_report(consolidated_data, sales_file, output_dir=N
 
 def generate_consolidated_reports(all_person_reports, base_output_dir):
     """
-    Create consolidated reports across all people and months.
+    Create consolidated reports across all people, months, and report types.
     
     Parameters:
     all_person_reports : list
@@ -239,7 +245,7 @@ def generate_consolidated_reports(all_person_reports, base_output_dir):
     print(f"\nConsolidated report for all people and months saved to '{consolidated_path}'")
     
     # Create monthly reports (aggregate by month)
-    monthly_reports = all_reports_df.groupby('month').agg({
+    monthly_reports = all_reports_df.groupby(['month', 'report_type']).agg({
         'total_customers': 'sum',
         'converted_customers': 'sum',
         'all_sales_customers': 'sum',
@@ -257,7 +263,7 @@ def generate_consolidated_reports(all_person_reports, base_output_dir):
     print(f"Monthly consolidated report saved to '{monthly_path}'")
     
     # Create per-person reports (aggregate by person)
-    person_reports = all_reports_df.groupby('person').agg({
+    person_reports = all_reports_df.groupby(['person', 'report_type']).agg({
         'total_customers': 'sum',
         'converted_customers': 'sum',
         'all_sales_customers': 'sum',
