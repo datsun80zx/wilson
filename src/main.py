@@ -78,7 +78,29 @@ def process_data_for_person_month(person, month, paths):
         file_mapping["sales_activity"], 
         file_mapping["jobs_report"]
     )
-    
+    # After the line: enriched_logs, consolidated_logs = enrich_activity_logs(...)
+    print("\nDEBUG: Checking for potential data issues...")
+    print(f"Enriched logs shape: {enriched_logs.shape}")
+    print(f"Consolidated logs shape: {consolidated_logs.shape}")
+
+    # Sample the first few rows to verify the merge worked correctly
+    print("\nSample from enriched logs (first 3 rows):")
+    print(enriched_logs.head(3))
+
+    print("\nSample from consolidated logs (first 3 rows):")
+    print(consolidated_logs.head(3))
+
+    # Check for null values in key columns
+    job_id_col = next((col for col in consolidated_logs.columns if 'job' in col.lower() and 'id' in col.lower()), None)
+    if job_id_col:
+        null_job_ids = consolidated_logs[job_id_col].isnull().sum()
+        print(f"\nNull values in {job_id_col}: {null_job_ids}")
+
+    customer_id_col = next((col for col in consolidated_logs.columns if 'customer' in col.lower() and 'id' in col.lower()), None)
+    if customer_id_col:
+        null_customer_ids = consolidated_logs[customer_id_col].isnull().sum()
+        print(f"Null values in {customer_id_col}: {null_customer_ids}")
+        
     # Step 2: Validate if all sales jobs are in the consolidated logs
     print(f"  Validating sales jobs...")
     is_complete, missing_jobs = validate_sales_in_activity(
