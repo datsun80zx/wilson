@@ -1,0 +1,20 @@
+Job #,Job Type,Member Status,Status,Completion Date,Booked By,Job Campaign,Recall,Created Date,Scheduled Date,Rescheduled Reason (drilldown),Jobs Total Revenue,Primary Technician,Customer ID,Customer Name
+256873983,Boiler Install,Active,Completed,2/19/2025,Victoria Doremus,ISR - LRhome,False,2/18/2025,2/19/2025,,$12135.32,Josh Gibson,53937967.0,Kari Greenfield
+257353686,Furnace Install,Active,Completed,2/25/2025,Victoria Doremus,ISR - LRhome,False,2/24/2025,2/25/2025,,$5533.93,Nicholas Rhinehart,204355027.0,Addie Smith
+206211241,HVAC System Accessories,Active,Completed,2/4/2025,Kenneth Kostal,ISR - LRhome,False,1/27/2025,2/4/2025,,$774.28,Nick Wilson,34677666.0,Tom Sanfilippo
+256894897,Full System Replacement,Active,Completed,2/19/2025,Rebekah Belcher,ISR - LRhome,False,2/18/2025,2/19/2025,,$11793.30,Cole McGhee,256872063.0,Kenneth Horn
+257220483,Furnace Install,Inactive,Completed,2/22/2025,Rebekah Belcher,ISR - LRhome,False,2/21/2025,2/22/2025,,$4169.89,Cole McGhee,257163652.0,Pat Shawhan
+257039838,Full System Replacement,Active,Completed,2/20/2025,Rebekah Belcher,ISR - LRhome,False,2/19/2025,2/20/2025,,$10961.10,Nicholas Rhinehart,42555261.0,David Miller 
+207240985,Furnace Install,Active,Completed,2/12/2025,Rebekah Belcher,ISR - LRhome,False,2/11/2025,2/12/2025,,$6845.33,Josh Gibson,53934806.0,Sean Jones
+256716603,Full System Replacement,Active,Completed,2/19/2025,Rebekah Belcher,ISR - LRhome,False,2/14/2025,2/17/2025,,$13989.58,Nicholas Rhinehart,53937079.0,Michele Perella
+256929954,Furnace Install,Active,Completed,2/19/2025,Rebekah Belcher,ISR - LRhome,False,2/18/2025,2/19/2025,,$5456.43,Nicholas Rhinehart,53940649.0,Jeffery Presley
+258556689,Full System Replacement,Active,Completed,2/27/2025,Rebekah Belcher,ISR - LRhome,False,2/26/2025,2/27/2025,,$12198.58,Cole McGhee,53941039.0,Catherine Kuo
+256945802,Full System Replacement,Active,Completed,2/20/2025,Rebekah Belcher,ISR - LRhome,False,2/18/2025,2/20/2025,,$16185.46,Josh Gibson,101829574.0,Rita Minick
+257224524,Duct Cleaning,Active,Completed,2/26/2025,Rebekah Belcher,ISR - LRhome,False,2/21/2025,2/26/2025,,$0.00,Brandon Niro (Tech),101829574.0,Rita Minick
+256887647,Furnace Install,Active,Completed,2/19/2025,Rebekah Belcher,ISR - LRhome,False,2/18/2025,2/19/2025,,$0.00,Greg Griffin,206737878.0,Richmond Nettey
+206756203,Full System Replacement,Inactive,Completed,2/6/2025,Rebekah Belcher,ISR - LRhome,False,2/4/2025,2/5/2025,,$7660.11,Josh Gibson,206081925.0,Brett Lowther & Megan Hendricks
+256934384,Duct Cleaning,Inactive,Completed,2/21/2025,Rebekah Belcher,ISR - LRhome,False,2/18/2025,2/21/2025,,$425.00,John Esborn,105143604.0,John Gerbasi
+206640131,Furnace/AC System Replacement,Inactive,Completed,2/3/2025,Rebekah Belcher,ISR - LRhome,False,2/3/2025,2/3/2025,,$0.00,Greg Griffin,200984466.0,Jen & Jeremy King 
+207065792,Furnace Install,Active,Completed,2/10/2025,Jorge Nunez,ISR - LRhome,False,2/8/2025,2/10/2025,,$6768.62,Cole McGhee,206737878.0,Richmond Nettey
+257204673,Furnace Repair,Inactive,Completed,2/21/2025,Brandon Niro,ISR - LRhome,True,2/21/2025,2/21/2025,,$0.00,Jon Baird,33003260.0,Jim Demboski
+70,,,,,,,,,,,$207405.03,,,51
