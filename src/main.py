@@ -4,6 +4,8 @@ from excel_to_csv import convert_excel_to_csv
 from sales_validator import validate_sales_in_activity
 from report_generator import generate_sales_conversion_report, generate_consolidated_reports
 from file_manager import find_required_files, setup_paths, scan_input_files
+from html_report_generator import generate_html_report  # Import the new module
+from datetime import datetime
 
 def process_data_for_person_month_report_type(person, month, report_type, paths):
     """
@@ -70,11 +72,212 @@ def process_data_for_person_month_report_type(person, month, report_type, paths)
         output_dir,
         person,
         month,
-        report_type  # Add report_type to the function parameters
+        report_type
+    )
+    
+    # Step 4: Generate HTML report
+    print(f"  Generating HTML report...")
+    html_report_path = generate_html_report(
+        conversion_report,
+        output_dir,
+        enriched_logs,  # Pass detailed data
+        consolidated_logs  # Pass consolidated data
     )
     
     print(f"Data processing complete for {person} - Month {month} - Report Type: {report_type}")
+    print(f"HTML Report available at: {html_report_path}")
+    
     return conversion_report
+
+def generate_master_html_report(all_reports, monthly_reports, person_reports, base_output_dir):
+    """
+    Generate a master HTML report with overview of all data.
+    """
+    # Create HTML content
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Master Sales Activity Report</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }}
+            .header {{
+                text-align: center;
+                margin-bottom: 30px;
+                border-bottom: 2px solid #ddd;
+                padding-bottom: 10px;
+            }}
+            h2 {{
+                color: #0066cc;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 10px;
+                margin-top: 30px;
+            }}
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 30px;
+            }}
+            th, td {{
+                padding: 10px;
+                border: 1px solid #ddd;
+                text-align: left;
+            }}
+            th {{
+                background-color: #f2f2f2;
+                font-weight: bold;
+            }}
+            tr:nth-child(even) {{
+                background-color: #f9f9f9;
+            }}
+            .footer {{
+                text-align: center;
+                font-size: 0.8em;
+                color: #888;
+                margin-top: 40px;
+                border-top: 1px solid #ddd;
+                padding-top: 10px;
+            }}
+            .report-link {{
+                display: block;
+                margin: 5px 0;
+                color: #0066cc;
+                text-decoration: none;
+            }}
+            .report-link:hover {{
+                text-decoration: underline;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Master Sales Activity & Conversion Report</h1>
+            <p>Generated on {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>
+        </div>
+        
+        <h2>Monthly Performance</h2>
+        <table>
+            <tr>
+                <th>Month</th>
+                <th>Report Type</th>
+                <th>Total Customers</th>
+                <th>Converted Customers</th>
+                <th>Conversion Rate</th>
+            </tr>
+    """
+    
+    # Add monthly data
+    for _, row in monthly_reports.iterrows():
+        html_content += f"""
+            <tr>
+                <td>{row['month']}</td>
+                <td>{row['report_type']}</td>
+                <td>{row['total_customers']}</td>
+                <td>{row['all_sales_customers']}</td>
+                <td>{row['conversion_rate']}%</td>
+            </tr>
+        """
+    
+    html_content += """
+        </table>
+        
+        <h2>Performance by Person</h2>
+        <table>
+            <tr>
+                <th>Person</th>
+                <th>Report Type</th>
+                <th>Total Customers</th>
+                <th>Converted Customers</th>
+                <th>Conversion Rate</th>
+            </tr>
+    """
+    
+    # Add person data
+    for _, row in person_reports.iterrows():
+        html_content += f"""
+            <tr>
+                <td>{row['person']}</td>
+                <td>{row['report_type']}</td>
+                <td>{row['total_customers']}</td>
+                <td>{row['all_sales_customers']}</td>
+                <td>{row['conversion_rate']}%</td>
+            </tr>
+        """
+    
+    html_content += """
+        </table>
+        
+        <h2>All Reports</h2>
+        <table>
+            <tr>
+                <th>Person</th>
+                <th>Month</th>
+                <th>Report Type</th>
+                <th>Total Customers</th>
+                <th>Converted Customers</th>
+                <th>Conversion Rate</th>
+            </tr>
+    """
+    
+    # Add all report data
+    for _, row in all_reports.iterrows():
+        html_content += f"""
+            <tr>
+                <td>{row['person']}</td>
+                <td>{row['month']}</td>
+                <td>{row['report_type']}</td>
+                <td>{row['total_customers']}</td>
+                <td>{row['all_sales_customers']}</td>
+                <td>{row['conversion_rate']}%</td>
+            </tr>
+        """
+    
+    html_content += """
+        </table>
+        
+        <h2>Report Links</h2>
+        <div class="report-links">
+    """
+    
+    # Add links to individual reports
+    for person in sorted(set(all_reports['person'])):
+        html_content += f"<h3>{person}</h3>"
+        person_data = all_reports[all_reports['person'] == person]
+        
+        for _, row in person_data.iterrows():
+            report_file = f"{row['person']}_month_{row['month']}_{row['report_type']}_report.html"
+            report_path = os.path.join("../", row['person'], f"month_{row['month']}", row['report_type'], report_file)
+            html_content += f"""
+                <a class="report-link" href="{report_path}">
+                    Month {row['month']} - {row['report_type']} Report
+                </a>
+            """
+    
+    # Add footer
+    html_content += """
+        </div>
+        
+        <div class="footer">
+            <p>This report was automatically generated by the Sales Activity Analysis System.</p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    # Write the HTML to a file
+    html_path = os.path.join(base_output_dir, "master_report.html")
+    with open(html_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    
+    print(f"\nMaster HTML report generated: {html_path}")
+    return html_path
 
 def main():
     print("Starting data processing pipeline...")
@@ -110,7 +313,16 @@ def main():
     # Generate consolidated reports
     if all_reports:
         print("\nGenerating consolidated reports...")
-        generate_consolidated_reports(all_reports, paths["output_dir"])
+        all_reports_df, monthly_reports, person_reports = generate_consolidated_reports(all_reports, paths["output_dir"])
+        
+        # Generate master HTML report
+        print("\nGenerating master HTML report...")
+        master_html_path = generate_master_html_report(
+            all_reports_df, 
+            monthly_reports, 
+            person_reports, 
+            paths["output_dir"]
+        )
     
     print("\nAll data processing complete!")
 
