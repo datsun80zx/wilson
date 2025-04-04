@@ -1,11 +1,19 @@
 import pandas as pd
 
-def validate_sales_in_activity(consolidated_file, sales_file):
+def validate_sales_in_activity(consolidated_data, sales_file):
     """
     Check if all Job IDs in the sales file are present in the consolidated activity file.
+    
+    Parameters:
+    consolidated_data : pandas.DataFrame or str
+        Either a DataFrame containing the consolidated data or a path to the CSV file
+    sales_file : str
+        Path to the sales CSV file
     """
     # Load the files
-    consolidated_data = pd.read_csv(consolidated_file)
+    if isinstance(consolidated_data, str):
+        consolidated_data = pd.read_csv(consolidated_data)
+    
     sales_data = pd.read_csv(sales_file)
     
     # Debug: Print column names to identify the correct job ID column
